@@ -27,7 +27,7 @@ type DolarRealModel struct {
 }
 
 func Database(ctx context.Context, dr *DolarReal) error {
-	ctxDatabase, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	ctxDatabase, cancel := context.WithTimeout(ctx, 10000000*time.Nanosecond)
 	defer cancel()
 
 	db, err := gorm.Open(sqlite.Open("cotacao.db"), &gorm.Config{})
