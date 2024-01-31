@@ -27,7 +27,7 @@ type DolarRealModel struct {
 }
 
 func Database(ctx context.Context, dr *DolarReal) error {
-	ctxDatabase, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	ctxDatabase, cancel := context.WithTimeout(ctx, 100000000*time.Nanosecond)
 	defer cancel()
 
 	db, err := gorm.Open(sqlite.Open("cotacao.db"), &gorm.Config{})
@@ -49,6 +49,10 @@ func Database(ctx context.Context, dr *DolarReal) error {
 		return fmt.Errorf("json.UnMarshal: Error UnMarshal data [%s]", err)
 	}
 
-	db.WithContext(ctxDatabase).Create(&drModel)
+	insetValue := db.WithContext(ctxDatabase).Create(&drModel)
+	if insetValue.Error != nil {
+		return fmt.Errorf("db.WithContext().Create(): Error to insert data [%s]", insetValue.Error)
+	}
+
 	return nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -33,6 +32,7 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 200*time.Millisecond)
@@ -55,11 +55,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		logger.Fatalf("ioutil.ReadAll: Error to read Request Body [%s]", err)
 	}
 
-	fmt.Printf("Status Code: %d\n", res.StatusCode)
 	json.Unmarshal(resBody, &dr)
 
 	if err := Database(ctx, &dr); err != nil {
-		logger.Printf("Database: Error to insert Request to database [%s]", err)
+		logger.Fatalf("Database: Error to insert Request to database [%s]", err)
 	}
 
 	drJson, err := json.Marshal(dr.USDBRL.Bid)
@@ -67,5 +66,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		logger.Fatalf("json.Marshal: Error to Marshal [%v]", err)
 	}
 
+	logger.Printf("Success to get dolar and write request in database")
 	w.Write(drJson)
 }
